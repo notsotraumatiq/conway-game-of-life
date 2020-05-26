@@ -32,6 +32,8 @@ const Game = () => {
   });
   const [running, setRunning] = useState(false);
 
+  const [interval, setInterval] = useState(1000);
+
   const runningRef = useRef(running);
 
   runningRef.current = running;
@@ -70,8 +72,9 @@ const Game = () => {
         }
       });
     });
-    setTimeout(runSimulation, 1000);
-  }, []);
+    console.log(interval);
+    setTimeout(runSimulation, interval);
+  }, [interval]);
 
   let outputRows = grid.map((row, rowIndex) =>
     row.map((column, columnIndex) => (
@@ -135,12 +138,38 @@ const Game = () => {
               )
             );
           }
-          console.log(rows);
           setGrid(rows);
         }}
       >
         Randomize
       </button>
+
+      <form
+        className={classes.Form}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setRunning(!running);
+          if (!running) {
+            runningRef.current = true;
+            runSimulation();
+          }
+        }}
+      >
+        <label>Interval in msec</label>
+        <input
+          placeholder="msec"
+          type="text"
+          value={interval}
+          onChange={(event) => {
+            // Should Halt automatically
+            runningRef.current = false;
+            setRunning(runningRef.current);
+            const newInterval = event.target.value;
+
+            setInterval(newInterval);
+          }}
+        />
+      </form>
     </>
   );
 };
